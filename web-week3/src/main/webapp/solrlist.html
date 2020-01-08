@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<script type="text/javascript" src="angularjs/angular.min.js"></script>
+<script src="angularjs/pagination.js"></script>
+<link rel="stylesheet" href="angularjs/pagination.css">
+<link rel="stylesheet" href="css2/index2.css" ></link>
+<script src="angularjs/pagination.js"></script>
+<link rel="stylesheet" href="angularjs/pagination.css">
+<script type="text/javascript">
+	var app = angular.module('myApp',[]);
+	app.controller('goodsController',function($scope,$http){
+		$scope.entity={}		
+		$scope.reloadList = function(){
+			$http.post('../goods/list.do',$scope.entity).success(
+				function(response){
+					$scope.list = response
+				}		
+			)
+		}
+		$scope.del = function(id){
+			$http.get('../goods/del.do?id='+id).success(
+				function(response){
+					if(response.success){
+						$scope.reloadList()
+					}else{
+						alert(response.message)
+					}
+				}		
+			)
+		}
+		$scope.golist = function(){
+			location.href="list.html"
+		}
+	})
+</script>
+
+<body ng-app="myApp" ng-controller="goodsController" ng-init="reloadList()">
+<h1>solr索引库</h1>
+商品名称模糊查询
+<input type="text" ng-model="entity.name">
+品牌模糊查询
+<input type="text" ng-model="entity.brandName">
+<input type="button" value="查询" ng-click="reloadList()">
+<input type="button" value="返回list列表" ng-click="golist()">
+<table>
+	<tr>
+		<td>编号</td>
+		<td>商品名称</td>
+		<td>价格</td>
+		<td>品牌</td>
+		<td>数量</td>
+		<td>上架时间</td>
+		<td>操作</td>
+	</tr>
+	<tr ng-repeat="entity in list">
+		<td>{{entity.id}}</td>
+		<td>{{entity.name}}</td>
+		<td>{{entity.price}}</td>
+		<td>{{entity.brandName}}</td>
+		<td>{{entity.num}}</td>
+		<td>{{entity.sjDate}}</td>
+		<td>
+			<input type="button" value="删除" ng-click="del(entity.id)">
+		</td>
+	</tr>
+</table>
+</body>
+</html>

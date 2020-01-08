@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<script type="text/javascript" src="angularjs/angular.min.js"></script>
+<script src="angularjs/pagination.js"></script>
+<link rel="stylesheet" href="angularjs/pagination.css">
+<link rel="stylesheet" href="css2/index2.css" ></link>
+<script src="angularjs/pagination.js"></script>
+<link rel="stylesheet" href="angularjs/pagination.css">
+<script type="text/javascript">
+	var app = angular.module('myApp',[]);
+	app.controller('goodsController',function($scope,$http){
+		$scope.entity={}
+		$scope.reloadList = function(){
+			$http.post('../goods/list.do',$scope.entity).success(
+				function(response){
+					$scope.list = response
+				}		
+			)
+		}
+		$scope.shen = function(id){
+			$http.get("../goods/shen.do?id="+id).success(
+				function(response){
+					$scope.reloadList()
+				}		
+			)
+		}
+		$scope.shen2 = function(id){
+			$http.get("../goods/shen2.do?id="+id).success(
+				function(response){
+					$scope.reloadList()
+				}		
+			)
+		}
+		$scope.solr = function(){
+			location.href="solrlist.html"
+		}
+	})
+</script>
+
+<body ng-app="myApp" ng-controller="goodsController" ng-init="reloadList()">
+<input type="button" value="进入solr索引库" ng-click="solr()">
+<table>
+	<tr>
+		<td>编号</td>
+		<td>商品名称</td>
+		<td>价格</td>
+		<td>品牌</td>
+		<td>数量</td>
+		<td>上架时间</td>
+		<td>状态</td>
+		<td>操作</td>
+	</tr>
+	<tr ng-repeat="entity in list">
+		<td>{{entity.id}}</td>
+		<td>{{entity.name}}</td>
+		<td>{{entity.price}}</td>
+		<td>{{entity.brandName}}</td>
+		<td>{{entity.num}}</td>
+		<td>{{entity.sjDate}}</td>
+		<td>
+			<span ng-if="entity.status==0">待审核</span>
+			<span ng-if="entity.status==1">已通过</span>
+			<span ng-if="entity.status==2">已驳回</span>
+		</td>
+		<td>
+			<input ng-if="entity.status==0" type="button" value="通过" ng-click="shen(entity.id)">
+			<input ng-if="entity.status==0" type="button" value="驳回" ng-click="shen2(entity.id)">
+		</td>
+	</tr>
+</table>
+</body>
+</html>
